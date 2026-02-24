@@ -24,6 +24,7 @@ const app = express();
 // ============================================
 // Security Middleware
 // ============================================
+app.set('trust proxy', 1); // Trust first proxy (Railway)
 app.use(helmet());
 
 // Rate limiting — 100 requests per 15 minutes per IP
