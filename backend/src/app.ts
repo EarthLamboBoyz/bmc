@@ -76,6 +76,10 @@ if (process.env.NODE_ENV !== 'production') {
 // Temporary seed endpoint — remove after seeding production
 app.get('/api/seed', async (_req: Request, res: Response) => {
     try {
+        // First push the schema to create tables
+        const { execSync } = await import('child_process');
+        execSync('npx prisma db push --accept-data-loss', { stdio: 'inherit' });
+
         const { PrismaClient } = await import('@prisma/client');
         const bcrypt = await import('bcryptjs');
         const prisma = new PrismaClient();
