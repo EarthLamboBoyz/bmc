@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(npx tailwindcss init -p)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run build:*)",
+      "Bash(ping:*)",
+      "Bash(dir:*)",
+      "Bash(powershell \"Get-Content CampaignDetail.tsx | Select-String -Pattern ''ArrowLeft'' -Context 0,1\")",
+      "Bash(powershell \"Get-ChildItem -Recurse -Include *.tsx,*.ts | Select-String -Pattern ''เธ'' | Select-Object -ExpandProperty Path -Unique\")",
+      "Bash(powershell -Command:*)",
+      "Bash(python fix_thai_encoding.py:*)",
+      "Bash(node fix_thai_encoding.js:*)",
+      "Bash(powershell \"Get-Content CampaignDetail.tsx | Select-String -Pattern ''กลับ|สถานะ|วัน|รางวัล'' | Select-Object -First 5\")",
+      "Bash(powershell \"Get-ChildItem -Recurse -Include *.tsx,*.ts | Select-String -Pattern ''เธ'' | Select-Object -ExpandProperty Path -Unique | Measure-Object\")"
+    ]
+  }
+}
