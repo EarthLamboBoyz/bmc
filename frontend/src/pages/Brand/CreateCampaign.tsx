@@ -81,6 +81,7 @@ export default function CreateCampaign() {
   const [showAIModal, setShowAIModal] = useState(false);
   const [editingReward, setEditingReward] = useState<RewardConfig | null>(null);
   const [contentGuidelines, setContentGuidelines] = useState<ContentGuidelines>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const platforms = ['TikTok', 'Instagram', 'YouTube'];
   const categories = ['Beauty', 'Fashion', 'Food', 'Health', 'Lifestyle', 'Tech', 'Travel', 'Gaming'];
@@ -418,6 +419,8 @@ export default function CreateCampaign() {
 
   const handleSubmit = async () => {
     try {
+      if (isSubmitting) return;
+      setIsSubmitting(true);
       console.log('Submitting form data:', formData); // Debug log
 
       if (!formData.title) {
@@ -484,6 +487,8 @@ export default function CreateCampaign() {
     } catch (error: any) {
       console.error('Failed to create campaign:', error);
       showError(`เกิดข้อผิดพลาด: ${error.response?.data?.error || error.message}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -1232,16 +1237,27 @@ export default function CreateCampaign() {
             <div className="flex gap-3">
               <button
                 onClick={handleSaveDraft}
-                className="px-6 py-3 border border-gray-200 dark:border-gray-600 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-slate-700 dark:text-white transition-colors"
+                disabled={isSubmitting}
+                className="px-6 py-3 border border-gray-200 dark:border-gray-600 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-slate-700 dark:text-white transition-colors disabled:opacity-50"
               >
                 บันทึกแบบร่าง
               </button>
               <button
                 onClick={handleSubmit}
-                className="px-6 py-3 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-opacity flex items-center gap-2"
+                disabled={isSubmitting}
+                className="px-6 py-3 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-50"
               >
-                <Sparkles className="w-4 h-4" />
-                เผยแพร่แคมเปญ
+                {isSubmitting ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    กำลังบันทึก...
+                  </span>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    เผยแพร่แคมเปญ
+                  </>
+                )}
               </button>
             </div>
           </div>

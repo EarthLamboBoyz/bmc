@@ -51,7 +51,7 @@ export default function BrandDashboard() {
     fetchData();
   }, []);
 
-  const activeCampaigns = campaigns.filter(c => c.status === 'live');
+  const activeCampaigns = campaigns.filter(c => c.status?.toLowerCase() === 'live');
 
   return (
     <DashboardLayout>

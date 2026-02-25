@@ -20,9 +20,17 @@ export const uploadImage = async (req: MulterRequest, res: Response) => {
             message: 'Upload successful',
             url: imageUrl
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Upload Error:', error);
-        res.status(500).json({ message: 'Upload failed', error: String(error) });
+
+        // Check if it's a configuration error
+        if (error?.message?.includes('Must supply api_key') || error?.message?.includes('cloud_name')) {
+            return res.status(500).json({
+                error: 'Cloudinary configuration missing. Please check CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET in environment variables.'
+            });
+        }
+
+        res.status(500).json({ error: 'Upload failed: ' + (error.message || String(error)) });
     }
 };
 
