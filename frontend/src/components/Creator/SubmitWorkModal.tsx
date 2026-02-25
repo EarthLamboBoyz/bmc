@@ -64,11 +64,7 @@ export default function SubmitWorkModal({
             });
 
             setShowSuccessUI(true);
-            // Wait a bit or let user close
-            setTimeout(() => {
-                if (onSuccess) onSuccess();
-                // Don't auto close immediately so they see the success
-            }, 500);
+            // Show success UI — user will close via "ตกลง" button
 
         } catch (error: any) {
             console.error('Submit error:', error);
