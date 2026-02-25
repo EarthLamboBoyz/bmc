@@ -50,6 +50,12 @@ export default function CampaignDetail() {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [applicationMessage, setApplicationMessage] = useState('');
+  const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  const showNotification = (type: 'success' | 'error', message: string) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 3000);
+  };
 
   useEffect(() => {
     console.log('useEffect triggered with id:', id);
@@ -187,11 +193,13 @@ export default function CampaignDetail() {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        alert('กรุณาเข้าสู่ระบบ');
+        showNotification('error', 'กรุณาเข้าสู่ระบบ');
         return;
       }
 
-      // Mock application - in real app, call API
+      // Call API to apply
+      await applicationService.apply(token, campaign.id, applicationMessage);
+
       setMyApplication({
         id: 'new-app',
         campaignId: campaign.id,
@@ -200,10 +208,11 @@ export default function CampaignDetail() {
         createdAt: new Date().toISOString(),
       });
       setShowApplyModal(false);
-      alert('สมัครเข้าร่วมแคมเปญสำเร็จ!');
-    } catch (error) {
+      setApplicationMessage('');
+      showNotification('success', 'สมัครเข้าร่วมแคมเปญสำเร็จ! 🎉');
+    } catch (error: any) {
       console.error('Error applying:', error);
-      alert('เกิดข้อผิดพลาด กรุณาลองใหม่');
+      showNotification('error', error.response?.data?.error || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
     }
   };
 
@@ -509,6 +518,27 @@ export default function CampaignDetail() {
                 ยืนยันการสมัคร
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {notification && (
+        <div className="fixed top-6 right-6 z-[9999] animate-slide-up">
+          <div style={{
+            background: notification.type === 'success'
+              ? 'linear-gradient(135deg, #059669, #10b981)'
+              : 'linear-gradient(135deg, #dc2626, #ef4444)',
+            borderRadius: '16px',
+            padding: '16px 24px',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            minWidth: '300px',
+          }}>
+            <span style={{ fontSize: '24px' }}>{notification.type === 'success' ? '✅' : '❌'}</span>
+            <p style={{ color: 'white', fontWeight: '600', fontSize: '15px' }}>{notification.message}</p>
           </div>
         </div>
       )}
