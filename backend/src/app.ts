@@ -27,23 +27,23 @@ const app = express();
 app.set('trust proxy', 1); // Trust first proxy (Railway)
 app.use(helmet());
 
-// Rate limiting — 100 requests per 15 minutes per IP
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { error: 'Too many requests, please try again later.' }
-});
-app.use('/api/', limiter);
-
-// CORS
+// CORS (must be before rate limiter so CORS headers are always sent)
 app.use(cors({
     origin: true, // Allow all origins explicitly
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
+
+// Rate limiting — 500 requests per 15 minutes per IP
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 500,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many requests, please try again later.' }
+});
+app.use('/api/', limiter);
 
 // Body parsers
 app.use(express.json({ limit: '50mb' }));
