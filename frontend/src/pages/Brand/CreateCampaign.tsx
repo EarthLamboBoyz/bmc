@@ -420,6 +420,13 @@ export default function CreateCampaign() {
   const handleSubmit = async () => {
     try {
       if (isSubmitting) return;
+
+      // Confirmation dialog before publishing
+      const confirmMessage = isEditMode
+        ? 'ยืนยันการอัพเดทแคมเปญหรือไม่?'
+        : 'ยืนยันการเผยแพร่แคมเปญหรือไม่? เมื่อเผยแพร่แล้วครีเอเตอร์จะสามารถเห็นและสมัครได้ทันที';
+      if (!window.confirm(confirmMessage)) return;
+
       setIsSubmitting(true);
       console.log('Submitting form data:', formData); // Debug log
 

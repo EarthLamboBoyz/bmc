@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createCampaign, getCampaigns, getCampaignById, endCampaign } from '../controllers/campaignController';
+import { createCampaign, updateCampaign, getCampaigns, getCampaignById, endCampaign } from '../controllers/campaignController';
 import { authenticate } from '../middleware/authMiddleware';
 
 const router = Router();
@@ -11,6 +11,7 @@ router.get('/:id', authenticate, getCampaignById);
 
 // Brand only
 router.post('/', authenticate, createCampaign);
+router.put('/:id', authenticate, updateCampaign);
 router.post('/:id/end', authenticate, endCampaign as any);
 
 export default router;

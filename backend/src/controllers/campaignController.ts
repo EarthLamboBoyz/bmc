@@ -82,6 +82,76 @@ export const createCampaign = async (req: AuthRequest, res: Response): Promise<v
     }
 };
 
+export const updateCampaign = async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+        const userId = req.user?.userId;
+        const campaignId = req.params.id;
+
+        if (!userId) {
+            res.status(401).json({ error: 'Unauthorized' });
+            return;
+        }
+
+        // Verify user is a BRAND and owns this campaign
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            include: { brandProfile: true }
+        });
+
+        if (user?.role !== 'BRAND' || !user.brandProfile) {
+            res.status(403).json({ error: 'Only brands can update campaigns' });
+            return;
+        }
+
+        const campaign = await prisma.campaign.findUnique({
+            where: { id: campaignId }
+        });
+
+        if (!campaign) {
+            res.status(404).json({ error: 'Campaign not found' });
+            return;
+        }
+
+        if (campaign.brandId !== user.brandProfile.id) {
+            res.status(403).json({ error: 'You can only update your own campaigns' });
+            return;
+        }
+
+        const {
+            title, description, coverImage, budget,
+            startDate, endDate, announceDate, minFollowers,
+            platforms, categories, rewards,
+            contentGuidelines, hasSamples, sampleInfo, status
+        } = req.body;
+
+        const updated = await prisma.campaign.update({
+            where: { id: campaignId },
+            data: {
+                ...(title && { title }),
+                ...(description && { description }),
+                ...(coverImage && { coverImage }),
+                ...(budget && { budget: parseFloat(budget) }),
+                ...(status && { status }),
+                ...(startDate && { startDate: new Date(startDate) }),
+                ...(endDate && { endDate: new Date(endDate) }),
+                ...(announceDate !== undefined && { announceDate: announceDate ? new Date(announceDate) : null }),
+                ...(minFollowers !== undefined && { minFollowers }),
+                ...(platforms && { platforms: JSON.stringify(platforms) }),
+                ...(categories && { categories: JSON.stringify(categories) }),
+                ...(rewards && { rewards: JSON.stringify(rewards) }),
+                ...(contentGuidelines && { contentGuidelines: JSON.stringify(contentGuidelines) }),
+                ...(hasSamples !== undefined && { hasSamples }),
+                ...(sampleInfo && { sampleInfo: JSON.stringify(sampleInfo) }),
+            }
+        });
+
+        res.json(updated);
+    } catch (error: any) {
+        console.error('Error updating campaign:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 export const getCampaigns = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
         const { brandId, owner } = req.query;
