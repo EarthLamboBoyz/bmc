@@ -116,6 +116,16 @@ async function main() {
     }
 
     console.log('Seeding finished.');
+
+    // Force reset demo passwords using raw SQL (avoids PgBouncer prepared statement issues)
+    const freshHash = await bcrypt.hash('123456', 10);
+    await prisma.$executeRawUnsafe(
+        `UPDATE users SET "passwordHash" = $1 WHERE email IN ($2, $3)`,
+        freshHash,
+        'demo-brand@bmc.com',
+        'demo-creator@bmc.com'
+    );
+    console.log('Demo passwords reset successfully.');
 }
 
 main()
