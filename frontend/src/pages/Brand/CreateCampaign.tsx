@@ -82,6 +82,7 @@ export default function CreateCampaign() {
   const [editingReward, setEditingReward] = useState<RewardConfig | null>(null);
   const [contentGuidelines, setContentGuidelines] = useState<ContentGuidelines>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const platforms = ['TikTok', 'Instagram', 'YouTube'];
   const categories = ['Beauty', 'Fashion', 'Food', 'Health', 'Lifestyle', 'Tech', 'Travel', 'Gaming'];
@@ -414,19 +415,25 @@ export default function CreateCampaign() {
       }));
     }
 
+
     setShowAIModal(false);
   };
+
 
   const handleSubmit = async () => {
     try {
       if (isSubmitting) return;
 
-      // Confirmation dialog before publishing
-      const confirmMessage = isEditMode
-        ? 'ยืนยันการอัพเดทแคมเปญหรือไม่?'
-        : 'ยืนยันการเผยแพร่แคมเปญหรือไม่? เมื่อเผยแพร่แล้วครีเอเตอร์จะสามารถเห็นและสมัครได้ทันที';
-      if (!window.confirm(confirmMessage)) return;
+      // Show custom confirmation modal
+      setShowConfirmModal(true);
+    } catch (error: any) {
+      console.error('Validation error:', error);
+    }
+  };
 
+  const handleConfirmPublish = async () => {
+    try {
+      setShowConfirmModal(false);
       setIsSubmitting(true);
       console.log('Submitting form data:', formData); // Debug log
 
@@ -1703,6 +1710,38 @@ export default function CreateCampaign() {
                 className="flex-1 px-4 py-3 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-opacity"
               >
                 บันทึกการแก้ไข
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
+          <div style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%)', border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '20px', padding: '32px', maxWidth: '420px', width: '90%', boxShadow: '0 25px 60px rgba(0,0,0,0.5)' }}>
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <div style={{ fontSize: '48px', marginBottom: '12px' }}>🚀</div>
+              <h3 style={{ color: 'white', fontSize: '20px', fontWeight: 'bold', marginBottom: '8px' }}>
+                {isEditMode ? 'ยืนยันการเผยแพร่แคมเปญ' : 'ยืนยันการสร้างแคมเปญ'}
+              </h3>
+              <p style={{ color: 'rgba(196, 181, 253, 0.8)', fontSize: '14px', lineHeight: '1.6' }}>
+                เมื่อเผยแพร่แล้ว ครีเอเตอร์จะสามารถเห็นและสมัครเข้าร่วมแคมเปญได้ทันที
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                style={{ flex: 1, padding: '12px 20px', borderRadius: '12px', border: '1px solid rgba(139, 92, 246, 0.3)', background: 'transparent', color: 'rgba(196, 181, 253, 0.9)', fontSize: '15px', fontWeight: '500', cursor: 'pointer' }}
+              >
+                ยกเลิก
+              </button>
+              <button
+                onClick={handleConfirmPublish}
+                disabled={isSubmitting}
+                style={{ flex: 1, padding: '12px 20px', borderRadius: '12px', border: 'none', background: 'linear-gradient(135deg, #8b5cf6, #d946ef)', color: 'white', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}
+              >
+                {isSubmitting ? 'กำลังเผยแพร่...' : '✨ เผยแพร่เลย!'}
               </button>
             </div>
           </div>
