@@ -481,11 +481,12 @@ export default function CreateCampaign() {
           totalSamples: formData.totalSamples,
           samplesPerCreator: formData.samplesPerCreator,
         } : {},
+        status: 'LIVE', // Always set to LIVE when publishing
       };
 
       if (isEditMode && id) {
         await campaignService.updateCampaign(id, payload, token);
-        showSuccess('อัพเดทแคมเปญสำเร็จ! 🎉');
+        showSuccess('เผยแพร่แคมเปญสำเร็จ! 🎉');
       } else {
         await campaignService.createCampaign(payload, token);
         showSuccess('สร้างแคมเปญสำเร็จ! 🎉');
