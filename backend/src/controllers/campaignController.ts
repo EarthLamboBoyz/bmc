@@ -85,7 +85,7 @@ export const createCampaign = async (req: AuthRequest, res: Response): Promise<v
 export const updateCampaign = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
         const userId = req.user?.userId;
-        const campaignId = req.params.id;
+        const campaignId = req.params.id as string;
 
         if (!userId) {
             res.status(401).json({ error: 'Unauthorized' });
