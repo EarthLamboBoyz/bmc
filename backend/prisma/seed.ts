@@ -7,15 +7,15 @@ const prisma = new PrismaClient();
 async function main() {
     console.log('Start seeding...');
 
-    // 1. Create Demo Brand
+    // 1. Create or Update Demo Brand
     const brandEmail = 'demo-brand@bmc.com';
+    const passwordHash = await bcrypt.hash('123456', 10);
     let brandUser = await prisma.user.findUnique({
         where: { email: brandEmail },
         include: { brandProfile: true }
     });
 
     if (!brandUser) {
-        const passwordHash = await bcrypt.hash('123456', 10);
         brandUser = await prisma.user.create({
             data: {
                 email: brandEmail,
@@ -32,16 +32,22 @@ async function main() {
             include: { brandProfile: true }
         });
         console.log(`Created brand: ${brandEmail}`);
+    } else {
+        // Always reset password to ensure demo login works
+        await prisma.user.update({
+            where: { email: brandEmail },
+            data: { passwordHash }
+        });
+        console.log(`Updated password for brand: ${brandEmail}`);
     }
 
-    // 2. Create Demo Creator
+    // 2. Create or Update Demo Creator
     const creatorEmail = 'demo-creator@bmc.com';
     const existingCreator = await prisma.user.findUnique({
         where: { email: creatorEmail }
     });
 
     if (!existingCreator) {
-        const passwordHash = await bcrypt.hash('123456', 10);
         await prisma.user.create({
             data: {
                 email: creatorEmail,
@@ -62,6 +68,13 @@ async function main() {
             }
         });
         console.log(`Created creator: ${creatorEmail}`);
+    } else {
+        // Always reset password to ensure demo login works
+        await prisma.user.update({
+            where: { email: creatorEmail },
+            data: { passwordHash }
+        });
+        console.log(`Updated password for creator: ${creatorEmail}`);
     }
 
     // 2. Create Demo Campaigns
